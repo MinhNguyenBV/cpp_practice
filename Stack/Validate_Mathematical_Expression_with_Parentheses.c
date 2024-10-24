@@ -7,3 +7,26 @@
     Input: "{(2 + 3) * [4 / (1 + 1)]}", Output: true
     Input: "{2 + (3 * [4 - 5]}", Output: false
 */
+
+bool validate_brackets_expression(const std::string& str)
+{
+	std::stack<char> stack;
+	std::unordered_map<char, char> brackets = {
+		{ ')', '(' },{ ']', '[' },{ '}', '{' }
+	};
+
+	for (const auto c : str)
+	{
+		if ((c == '{' || c == '[' || c == '(')) {
+			stack.push(c);
+		}
+		else if (brackets.count(c)){
+			if (stack.empty() || stack.top() != brackets[c])
+				return false;
+
+			stack.pop();
+		}
+	}
+
+	return stack.empty();
+}
