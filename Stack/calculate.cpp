@@ -1,50 +1,54 @@
-int calculate(const std::string& str) {
-    std::stack<int> numbers;
-    int result = 0;
-    EXP prev_exp = EXP::NO_EXP;
+enum class EXP
+    {
+        ADD,
+        SUB,
+        MUL,
+        DIV,
+        NO_EXP,
+    };
 
-    auto begin = str.begin();
+    int calculate(const string& str) {
+        std::stack<int> numbers;
+        int result = 0;
+        EXP prev_exp = EXP::ADD;
 
-    while (begin != str.end()) {
-        auto end = std::find_if(begin, str.end(), [](char c) {
-            return c == '+' || c == '-' || c == '*' || c == '/';
+        auto begin = str.begin();
+
+        while (begin != str.end()) {
+            auto end = std::find_if(begin, str.end(), [](char c) {
+                return c == '+' || c == '-' || c == '*' || c == '/';
             });
 
-        int curr_num = std::stoi(std::string(begin, end));
-        curr_num *= (prev_exp != EXP::SUB) ? 1 : -1;
+            int curr_num = std::stoi(std::string(begin, end));
 
-        if (prev_exp == EXP::MUL || prev_exp == EXP::DIV)
-        {
-            int prev_num = numbers.top();
-            numbers.pop();
-
-            if (prev_exp == EXP::MUL)
-                curr_num *= prev_num;
-            else
-                curr_num = prev_num / curr_num;
-        }
-
-        numbers.push(curr_num);
-
-        if (end != str.end())
-        {
-            switch (*end) {
-            case '+': prev_exp = EXP::ADD; break;
-            case '-': prev_exp = EXP::SUB; break;
-            case '*': prev_exp = EXP::MUL; break;
-            case '/': prev_exp = EXP::DIV; break;
+            if (prev_exp == EXP::SUB) curr_num = -curr_num;
+            else if (prev_exp == EXP::MUL) {
+                curr_num *= numbers.top();
+                numbers.pop();
+            }
+            else if (prev_exp == EXP::DIV) {
+                curr_num = numbers.top() / curr_num;
+                numbers.pop();
             }
 
-            begin = end + 1;
+            numbers.push(curr_num);
+
+            if (end != str.end()) {
+                switch (*end) {
+                    case '+': prev_exp = EXP::ADD; break;
+                    case '-': prev_exp = EXP::SUB; break;
+                    case '*': prev_exp = EXP::MUL; break;
+                    case '/': prev_exp = EXP::DIV; break;
+                }
+                begin = end + 1;
+            }
+            else break;
         }
-        else break;
-    }
 
-    while (!numbers.empty())
-    {
-        result += numbers.top();
-        numbers.pop();
-    }
+        while (!numbers.empty()) {
+            result += numbers.top();
+            numbers.pop();
+        }
 
-    return result;
-}
+        return result;
+    }
