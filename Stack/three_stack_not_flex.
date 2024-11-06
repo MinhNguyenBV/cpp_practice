@@ -1,0 +1,53 @@
+class ThreeStack {
+public:
+    ThreeStack(size_t size)
+        : arr(size * 3), stack_size(size)
+    {
+        tops[min_stack] = -1;
+        tops[1]         = size - 1;
+        tops[max_stack] = size * 2 - 1;
+    }
+
+    void push(int stack_num, int value) {
+        if (stack_num < min_stack || stack_num > max_stack)
+            throw std::out_of_range("stack number must be in [0,2]");
+
+        size_t max_top = (1 + static_cast<size_t>(stack_num)) * stack_size - 1;
+        if (tops[stack_num] >= max_top)
+            throw std::overflow_error("stack is full");
+
+        tops[stack_num]++;
+        arr[tops[stack_num]] = value;
+    }
+
+    void pop(int stack_num) {
+        if (stack_num < min_stack || stack_num > max_stack)
+            throw std::out_of_range("stack number must be in [0,2]");
+
+        if (tops[stack_num] < stack_num * stack_size)
+            throw std::overflow_error("stack is empty");
+
+        tops[stack_num]--;
+    }
+
+    int top(int stack_num) {
+        if (stack_num < min_stack || stack_num > max_stack)
+            throw std::out_of_range("stack number must be in [0,2]");
+
+        if (tops[stack_num] < stack_num * stack_size)
+            throw std::overflow_error("stack is empty");
+
+        return arr[tops[stack_num]];
+    }
+
+    bool is_empty(int stack_num) const {
+        return (tops[stack_num] < stack_num * stack_size);
+    }
+
+private:
+    std::vector<int> arr;
+    int tops[3] {};
+    size_t stack_size;
+    const int min_stack = 0;
+    const int max_stack = 2;
+};
